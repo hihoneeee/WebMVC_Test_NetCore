@@ -1,0 +1,22 @@
+﻿@model IEnumerable<TestWebAPI.DTOs.Category.GetCategoryDTO>
+
+@foreach (var category in Model)
+{
+    <tr id="@category.id">
+        <th scope="row"></th>
+        <td>
+            <img style="margin-top: 1rem; height: 5rem;"
+                 src="@category.avatar" alt="avatar">
+        </td>
+        <td>
+            @category.title
+        </td>
+        <td>
+            @category.description
+        </td>
+        <td class="row-cols-3" style="line-height: 2.5">
+            <a href="/category/edit/@category.id" class="btn btn-warning btn-sm">Sửa</a>
+            <button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(@category.id)">Xóa</button>
+        </td>
+    </tr>
+}

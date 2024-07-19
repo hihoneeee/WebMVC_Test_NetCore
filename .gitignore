@@ -1,0 +1,6 @@
+appsettings.json
+bin
+obj
+TestWebMVC.csproj.user
+TestWebMVC.csproj
+appsettings.Development
