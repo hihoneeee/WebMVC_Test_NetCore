@@ -28,44 +28,58 @@ namespace TestWebMVC.Controllers
         }
         public async Task<IActionResult> Create()
         {
-            return View();
+            var model = new GetCategoryDTO(); 
+            return View("Form", model);
         }
+
+        public async Task<IActionResult> Store(CategoryDTO categoryDTO)
+        {
+            var response = await _categoryServices.CreateCategoryAsync(categoryDTO);
+            TempData["ToastMessage"] = response.message;
+            TempData["ToastSuccess"] = response.success;
+            if (response.statusCode == EHttpType.Success)
+            {
+                return RedirectToAction("Index");
+            }
+            else {
+                return RedirectToAction("Create");
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var serviceResponse = await _categoryServices.GetCategoryByIdAsync(id);
             if (serviceResponse.data != null)
             {
-                return View(serviceResponse.data);
+                return View("Form", serviceResponse.data);
             }
-            return View("Error", new { message = serviceResponse.message });
+            return RedirectToAction("Index");
         }
+
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, CategoryDTO categoryDTO)
+        public async Task<IActionResult> Update(int id, CategoryDTO categoryDTO)
         {
             var serviceResponse = await _categoryServices.UpdateCategoryAsync(id, categoryDTO);
+            TempData["ToastMessage"] = serviceResponse.message;
+            TempData["ToastSuccess"] = serviceResponse.success;
             if (serviceResponse.statusCode == EHttpType.Success)
             {
-                ViewData["ToastMessage"] = serviceResponse.message;
                 return RedirectToAction("Index");
             }
             else
             {
-                return StatusCode((int)serviceResponse.statusCode, new { serviceResponse.success, serviceResponse.message });
+                return RedirectToAction("Edit");
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             var serviceResponse = await _categoryServices.DeleteCategoryAsync(id);
-            if (serviceResponse.statusCode == EHttpType.Success)
-            {
-                return RedirectToAction("Index");
-            }
-            else
-            {
-                return StatusCode((int)serviceResponse.statusCode, new { serviceResponse.success, serviceResponse.message });
-            }
+            TempData["ToastMessage"] = serviceResponse.message;
+            TempData["ToastSuccess"] = serviceResponse.success;
+            return RedirectToAction("Index");
         }
     }
 }
