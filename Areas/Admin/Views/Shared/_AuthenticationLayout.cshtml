@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="~/css/authentication.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+</head>
+<body>
+    @RenderBody()
+    <script src="/lib/jquery//dist/jquery.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    @if (TempData["ToastMessage"] != null)
+    {
+        <script>
+            var toastMessage = '@TempData["ToastMessage"]';
+            var toastSuccess = '@TempData["ToastSuccess"]';
+            console.log(toastSuccess)
+            console.log(toastMessage)
+            if (toastSuccess === 'True') {
+                toastr.success(toastMessage);
+            }
+            else {
+                toastr.error(toastMessage);
+            }
+        </script>
+    }
+    <script src="~/js/tailwind.config.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clifford: '#da373d',
+                    }
+                }
+            }
+        }
+    </script>
+
+
+    <script>
+        const container = document.querySelector(".container");
+        const loginForm = document.querySelector('.login-form')
+        const RegisterForm = document.querySelector('.Register-form');
+        const RegiBtn = document.querySelector('.RegiBtn');
+        const LoginBtn = document.querySelector('.LoginBtn');
+        RegiBtn.addEventListener('click', () => {
+            RegisterForm.classList.add('active');
+            loginForm.classList.add('active')
+        })
+        LoginBtn.addEventListener('click', () => {
+            RegisterForm.classList.remove('active');
+            loginForm.classList.remove('active')
+        })
+    </script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Gọi hàm để xử lý biểu tượng con mắt cho các trường mật khẩu
+            togglePasswordVisibility('.toggle-password-field', '.eye-icon');
+        });
+
+        function togglePasswordVisibility(passwordFieldSelector, eyeIconSelector) {
+            const passwordFields = document.querySelectorAll(passwordFieldSelector);
+            const eyeIcons = document.querySelectorAll(eyeIconSelector);
+
+            eyeIcons.forEach((eyeIcon, index) => {
+                eyeIcon.addEventListener('click', function () {
+                    const type = passwordFields[index].getAttribute('type') === 'password' ? 'text' :
+                        'password';
+                    passwordFields[index].setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '&#128065;' : '&#128064;'; // Change eye icon
+                });
+            });
+        }
+    </script>
+
+    <style>
+        .eye-icon {
+            position: absolute;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+            .eye-icon:hover {
+                color: #007bff;
+            }
+
+        .toggle-password-field:focus {
+            border-color: #007bff;
+        }
+
+        .toggle-password-field[type="password"] {
+            padding-right: 30px;
+        }
+
+        .toggle-password {
+            color: #555;
+        }
+    </style>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

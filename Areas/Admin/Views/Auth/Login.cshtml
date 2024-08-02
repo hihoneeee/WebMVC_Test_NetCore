@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Admin category";
+    Layout = "~/Areas/Admin/Views/Shared/_AuthenticationLayout.cshtml";
+}
+
+@model TestWebAPI.DTOs.Auth.AuthLoginDTO
+
+<div class="container lg:w-[30%] w-[70%]">
+    <div class="Form login-form space-y-6">
+        <h2 class="lg:text-2xl text-xl font-bold">Login ADMIN</h2>
+        <form method="post" enctype="multipart/form-data" asp-action="Verify" class="space-y-10">
+            <div class="input-box flex items-center justify-center gap-4 flex-col">
+                <label class="mb-10" for="phone">Phone Number</label>
+                <div class="w-full flex-b items-center mb-2">
+                    <i class='bx bxs-user mb-4'></i>
+                    <input id="phone" type="text" class="bg-transparent "
+                           name="phone" value="@Model.phone" required autocomplete="on" autofocus
+                           placeholder="Enter Your phone...">
+                    @Html.ValidationMessageFor(m => m.phone, "", new { @class = "invalid-feedback" })
+                </div>
+
+            </div>
+            <div class="input-box flex items-center justify-center gap-4 flex-col">
+                <label class="mb-10" for="password">Password</label>
+                <div class="w-full flex-b items-center mb-2">
+                    <i class='bx bxs-lock-alt'></i>                    
+                    <input id="password" type="password" class=" toggle-password-field bg-transparent border-0"
+                           name="password" required autocomplete="current-password" placeholder="Enter Your Password*">
+                    <span class="eye-icon toggle-password cursor-pointer">&#128065;</span>
+                    @Html.ValidationMessageFor(m => m.password, "", new { @class = "invalid-feedback" })
+                </div>
+
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p>Or Sign up using</p>
+        <div class="social-media">
+            <i class='bx bxl-facebook'></i>
+            <i class='bx bxl-google'></i>
+            <i class='bx bxl-twitter'></i>
+        </div>
+        <p class="RegisteBtn RegiBtn"><a href="javascript:void(0);">Register Now</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
