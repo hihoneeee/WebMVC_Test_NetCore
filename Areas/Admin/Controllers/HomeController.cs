@@ -1,24 +1,31 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using TestWebAPI.Middlewares.Interfaces;
 using TestWebMVC.Models;
 
 namespace TestWebMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "D22MD2")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ICookieHelper _cookieHelper;
+        public HomeController(ILogger<HomeController> logger, ICookieHelper cookieHelper)
         {
             _logger = logger;
+            _cookieHelper = cookieHelper;
         }
 
         public IActionResult Index()
         {
+            var avatar = _cookieHelper.GetUserAvatar();
+            var fullName = _cookieHelper.GetUserFullName();
+            var roleName = _cookieHelper.GetUserRoleName();
+
+            ViewBag.Avatar = avatar;
+            ViewBag.FullName = fullName;
+            ViewBag.RoleName = roleName;
             return View();
         }
 

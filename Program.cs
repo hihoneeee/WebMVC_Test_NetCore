@@ -7,11 +7,13 @@ using TestWebAPI.Data;
 using TestWebAPI.Helpers;
 using AutoMapper;
 using TestWebAPI.Settings;
-using TestWebAPI.Middlewares;
 using TestWebAPI.Helpers.IHelpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.Extensions.Options;
+using TestWebAPI.Configs;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using TestWebAPI.Middlewares.Interfaces;
+using TestWebAPI.Middlewares;
+using TestWebMVC.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,83 +38,52 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Config Jwt Bearer
-var jwtSection = builder.Configuration.GetSection("AppSettings");
-builder.Services.Configure<TokenSetting>(jwtSection);
-
-var jwtSettings = jwtSection.Get<TokenSetting>();
-
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = false;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
-            RoleClaimType = "roleCode"
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-                var path = context.HttpContext.Request.Path;
-
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
-                {
-                    context.Token = accessToken;
-                }
-                return Task.CompletedTask;
-            },
-            OnChallenge = context =>
-            {
-                context.HandleResponse();
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "application/json";
-                var result = Newtonsoft.Json.JsonConvert.SerializeObject(new
-                {
-                    Success = "false",
-                    message = "Token Invalid"
-                });
-                return context.Response.WriteAsync(result);
-            }
-        };
-    });
+// Config Cookie Authentication 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.LoginPath = "/admin/auth/login";
+    options.AccessDeniedPath = "/admin/access-denied";
+});
 
 // Builder settings
 builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
+
+// cookie
 builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
 builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<ICloudinaryServices, CloudinaryServices>();
 builder.Services.AddScoped<IAuthService, AuthServices>();
-builder.Services.AddScoped<IJwtServices, JwtServices>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IRoleService, RoleServices>();
 builder.Services.AddScoped<IPermissionServices, PermissionServices>();
 builder.Services.AddScoped<ISendMailServices, SendMailServices>();
 builder.Services.AddScoped<IRoleHasPermissionServices, RoleHasPermissionServices>();
+builder.Services.AddScoped<IJwtServices, JwtServices>();
 
 // Add repositories to the container.
 builder.Services.AddScoped<ICategoryRepositories, CategoryRepositories>();
 builder.Services.AddScoped<IAuthRepositories, AuthRepositories>();
-builder.Services.AddScoped<IJwtRepositories, JwtRepositories>();
 builder.Services.AddScoped<IUserRepositories, UserRepositories>();
 builder.Services.AddScoped<IPermisstionRepositories, PermisstionRepositories>();
 builder.Services.AddScoped<IRoleHasPermissionRepositories, RoleHasPermissionRepositories>();
 builder.Services.AddScoped<IRoleRepositories, RoleRepositories>();
+builder.Services.AddScoped<IJwtRepositories, JwtRepositories>();
 
 // Add helpers to the container.
-builder.Services.AddScoped<IJWTHelper, JWTHelper>();
 builder.Services.AddScoped<IHashPasswordHelper, HashPasswordHelper>();
+builder.Services.AddSingleton<ICookieHelper, CookieHelper>();
+builder.Services.AddScoped<IJWTHelper, JWTHelper>();
+
+builder.Services.Configure<RedisCacheSetting>(builder.Configuration.GetSection("RedisCacheSetting"));
+// Register the setting
+builder.Services.AddSingleton<RedisCacheConfig>(provider =>
+{
+    var redisConfig = provider.GetRequiredService<IOptions<RedisCacheSetting>>().Value;
+    return new RedisCacheConfig(redisConfig.ConnectionString);
+});
 
 builder.Services.AddControllersWithViews();
 
@@ -133,6 +104,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 
+app.UseAuthentication();
+app.UseMiddleware<CookieRoleMiddleware>();
 app.UseAuthorization();
 
 app.MapControllerRoute(

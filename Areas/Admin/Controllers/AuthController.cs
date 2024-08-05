@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using TestWebAPI.DTOs.Auth;
+using TestWebAPI.Middlewares.Interfaces;
 using TestWebAPI.Services.Interfaces;
-using static TestWebAPI.Response.HttpStatus;
 
 namespace TestWebMVC.Areas.Admin.Controllers
 {
@@ -9,23 +11,41 @@ namespace TestWebMVC.Areas.Admin.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-        public AuthController (IAuthService authService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICookieHelper _cookieHelper;
+
+        public AuthController (IAuthService authService, IHttpContextAccessor httpContextAccessor, ICookieHelper cookieHelper)
         {
             _authService = authService;
+            _httpContextAccessor = httpContextAccessor;
+            _cookieHelper = cookieHelper;
         }
+
         public IActionResult Login()
         {
             return View(new AuthLoginDTO());
         }
+
+        [HttpPost]
         public async Task<IActionResult> Verify(AuthLoginDTO authLoginDTO)
         {
-            var response = await _authService.Login(authLoginDTO);
+            var response = await _authService.LoginMvc(authLoginDTO);
             TempData["ToastMessage"] = response.message;
             TempData["ToastSuccess"] = response.success;
-            if (response.statusCode == EHttpType.Success)
+
+            if (response.success)
             {
-                HttpContext.Session.SetString("access_token", response.accessToken);
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                var roleCode = _cookieHelper.GetUserRole();
+                if (roleCode == "D22MD2")
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
+                else
+                {
+                    TempData["ToastMessage"] = "Invalid role.";
+                    TempData["ToastSuccess"] = false;
+                    return RedirectToAction("Login", "Auth", new { area = "Admin" });
+                }
             }
             else
             {
@@ -34,5 +54,11 @@ namespace TestWebMVC.Areas.Admin.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Auth", new { area = "Admin" });
+        }
     }
 }
