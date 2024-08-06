@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Quản lý vai trò";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@model TestWebAPI.DTOs.Role.RoleDTO
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            Quản lý vai trò
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-dashboard"></i> Trang chủ</a></li>
+            <li><a asp-controller="Category" asp-action="Index">Quản lý vai trò</a></li>
+            @if (Model.id == 0)
+            {
+                <li class="active">Thêm vai trò</li>
+            }
+            else
+            {
+                <li class="active">Sửa vai trò</li>
+            }
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="col-md-8">
+            <div class="box box-primary">
+
+                <div class="box-header with-border">
+                    @if (Model.id == 0)
+                    {
+                        <h3 class="box-title">Thêm mới danh mục</h3>
+                    }
+                    else
+                    {
+                        <h3 class="box-title">Sửa danh mục</h3>
+                    }
+                </div>
+                @if (ViewBag.Errors != null && ViewBag.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger" style="padding: 0.75rem 2.25rem; margin-bottom: 0">
+                        <ul>
+                            @foreach (var error in ViewBag.Errors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                @if (TempData["status"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @TempData["status"]
+                    </div>
+                }
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form asp-action="@(Model.id == 0 ? "Store" : "Update")" method="post" enctype="multipart/form-data">
+                    @if (Model.id != 0)
+                    {
+                        <input type="hidden" name="id" value="@Model.id" />
+                    }
+                    <div class="box-body space-x-2">
+                        <div class="col-md-8 px-10 py-4">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.value, "Tên vai trò")
+                                @Html.TextBoxFor(model => model.value, new { @class = "form-control", placeholder = "Nhập dữ liệu...", id = "slug", onkeyup = "ChangeToSlug()" })
+                                @Html.ValidationMessageFor(model => model.value, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-footer">
+                        @if (Model.id == 0)
+                        {
+                            <input type="submit" value="Lưu vai trò" class="btn btn-success bg-green-600" />
+                        }
+                        else
+                        {
+                            <input type="submit" value="Cập Nhật" class="btn btn-success bg-green-600" />
+                        }
+                    </div>
+                </form>
+            </div>
+            <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

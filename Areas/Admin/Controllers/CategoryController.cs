@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestWebAPI.DTOs.Category;
+using TestWebAPI.Middlewares;
+using TestWebAPI.Middlewares.Interfaces;
 using TestWebAPI.Services.Interfaces;
 using static TestWebAPI.Response.HttpStatus;
 
 namespace TestWebMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
         private readonly ICategoryServices _categoryServices;
-        public CategoryController(ICategoryServices categoryServices)
+
+        public CategoryController(ICategoryServices categoryServices, ICookieHelper cookieHelper) : base(cookieHelper)
         {
             _categoryServices = categoryServices;
         }
@@ -18,14 +21,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var serviceResponse = await _categoryServices.GetCategoriesAsync();
-            if (serviceResponse.statusCode == EHttpType.Success)
-            {
-                return View(serviceResponse.data);
-            }
-            else
-            {
-                return StatusCode((int)serviceResponse.statusCode, new { serviceResponse.success, serviceResponse.message });
-            }
+            return View(serviceResponse.data);
         }
         public async Task<IActionResult> Create()
         {

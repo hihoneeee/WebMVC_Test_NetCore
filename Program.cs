@@ -115,6 +115,8 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{controller=Error}/{action=NotFound}");
 app.Run();
 

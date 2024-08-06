@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
 using TestWebAPI.Middlewares.Interfaces;
 
@@ -10,6 +8,7 @@ namespace TestWebMVC.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly ICookieHelper _cookieHelper;
+
         public CookieRoleMiddleware(RequestDelegate next, ICookieHelper cookieHelper)
         {
             _next = next;
@@ -20,17 +19,25 @@ namespace TestWebMVC.Middlewares
         {
             var path = context.Request.Path;
 
-            // Bỏ qua kiểm tra cho các trang đăng nhập
-            if (path.StartsWithSegments("/admin/auth/login") || path.StartsWithSegments("/admin/auth/verify"))
+            // Bỏ qua kiểm tra cho các trang xác minh
+            if (path.StartsWithSegments("/admin/auth/verify"))
             {
                 await _next(context);
                 return;
             }
 
+            var roleCode = _cookieHelper.GetUserRole();
+
+            // Kiểm tra nếu người dùng đã có cookie và đang truy cập trang đăng nhập
+            if (!string.IsNullOrEmpty(roleCode) && path.StartsWithSegments("/admin/auth/login"))
+            {
+                context.Response.Redirect("/admin");
+                return;
+            }
+
+            // Kiểm tra quyền truy cập các trang admin
             if (path.StartsWithSegments("/admin"))
             {
-                var roleCode = _cookieHelper.GetUserRole();
-
                 if (string.IsNullOrEmpty(roleCode) || roleCode != "D22MD2")
                 {
                     context.Response.Redirect("/admin/auth/login");

@@ -1,0 +1,44 @@
+﻿@model TestWebMVC.Areas.Admin.ViewModel.RoleHasPermission.RolePermissionsViewModel
+
+@{
+    ViewData["Title"] = "Phân quyền cho vai trò";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            Quản lý vai trò
+        </h1>
+        <ol class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Home"><i class="fa fa-dashboard"></i>Trang chủ</a></li>
+            <li><a href="#">Quản lý vai trò</a></li>
+            <li class="active">Cấp quyền vai trò</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="col-md-8">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Cấp quyền cho @Model.Role.value</h3>
+                </div>
+
+                <div class="box-body">
+                    <form asp-action="AssignRolePermissions" method="post">
+                        <input type="hidden" asp-for="Role.code" name="codeRole" />
+                        @foreach (var permission in Model.Permissions)
+                        {
+                            <div>
+                                <input type="checkbox" name="codePermission" value="@permission.code" @(Model.SelectedPermissionIds.Contains(permission.value) ? "checked" : "") />
+                                <label>@permission.value</label>
+                            </div>
+                        }
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-success bg-green-600">Lưu lại</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

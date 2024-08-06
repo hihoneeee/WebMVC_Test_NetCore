@@ -7,11 +7,11 @@ using TestWebMVC.Models;
 namespace TestWebMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ICookieHelper _cookieHelper;
-        public HomeController(ILogger<HomeController> logger, ICookieHelper cookieHelper)
+        public HomeController(ILogger<HomeController> logger, ICookieHelper cookieHelper) : base(cookieHelper)
         {
             _logger = logger;
             _cookieHelper = cookieHelper;
@@ -19,13 +19,6 @@ namespace TestWebMVC.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var avatar = _cookieHelper.GetUserAvatar();
-            var fullName = _cookieHelper.GetUserFullName();
-            var roleName = _cookieHelper.GetUserRoleName();
-
-            ViewBag.Avatar = avatar;
-            ViewBag.FullName = fullName;
-            ViewBag.RoleName = roleName;
             return View();
         }
 

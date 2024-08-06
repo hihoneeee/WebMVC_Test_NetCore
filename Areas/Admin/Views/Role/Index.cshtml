@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Quản lý vai trò";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@model List<TestWebAPI.DTOs.Role.RoleDTO>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            Quản lý vai trò
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-dashboard"></i>Trang chủ</a></li>
+            <li><a href="#">Quản lý vai trò</a></li>
+        </ol>
+    </section>
+    <section class="content container-fluid">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body table-responsive no-padding">
+                    <table class="table-hover table" id='table_panigation'>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Tên</th>
+                                <th scope="col">Quyền</th>
+                                <th scope="col">Quản Lý</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var role in Model)
+                            {
+                                <tr id="@role.id">
+                                    <th scope="row"></th>
+                                    <td>
+                                        @role.value
+                                    </td>
+                                    <td>
+                                        @foreach (var permission in role.dataPermission)
+                                        {
+                                            if (permission != null)
+                                            {
+                                                <span class="badge bg-[#17a2b8]">@permission.value</span>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-xl text-black font-semibold">Chưa có quyền nào!</p>
+                                            }
+                                        }
+                                    </td>
+                                    <td class="flex items-center gap-2" style="line-height: 2.5">
+                                        <a asp-controller="Role" asp-action="AssignPermissions" asp-route-Id="@role.id" class="btn btn-info btn-sm">Cấp quyền</a>
+                                        <a asp-controller="Role" asp-action="Edit" asp-route-Id="@role.id" class="btn btn-warning btn-sm">Sửa</a>
+
+                                        <form asp-action="Delete" method="post" asp-route-Id="@role.id">
+                                            <input type="submit" value="Xóa" class="btn btn-danger btn-sm" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
