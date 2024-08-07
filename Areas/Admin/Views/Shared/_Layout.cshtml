@@ -230,12 +230,12 @@
                     <ul class="treeview-menu">
                         <li>
                             <a asp-controller="Category" asp-action="Index">
-                                <i class="fa fa-circle-o"></i>Danh sách
+                                <i class="fa fa-circle-o"></i>Danh sách danh mục
                             </a>
                         </li>
                         <li>
                             <a asp-controller="Category" asp-action="Create">
-                                <i class="fa fa-circle-o"></i> Tạo mới
+                                <i class="fa fa-circle-o"></i> Thêm mới danh mục
                             </a>
                         </li>
                     </ul>
@@ -243,7 +243,7 @@
 
                 <li class="treeview @(segment == "Role" ? "active" : "")">
                     <a href="#">
-                        <i class="ri-team-line"></i> <span>Quản lý vai trò</span>
+                        <i class="ri-team-line"></i> <span>Quản lý vai trò và quyền</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
@@ -251,17 +251,36 @@
                     <ul class="treeview-menu">
                         <li>
                             <a asp-controller="Role" asp-action="Index">
-                                <i class="fa fa-circle-o"></i>Danh sách
+                                <i class="fa fa-circle-o"></i>Danh sách vai trò
                             </a>
                         </li>
                         <li>
-                            <a asp-controller="Role" asp-action="Create">
-                                <i class="fa fa-circle-o"></i> Tạo mới
+                            <a asp-controller="Permission" asp-action="Index">
+                                <i class="fa fa-circle-o"></i>Danh sách quyền
                             </a>
                         </li>
                     </ul>
                 </li>
-
+                <li class="treeview @(segment == "User" ? "active" : "")">
+                    <a href="#">
+                        <i class="ri-admin-line"></i> <span>Quản lý nhân viên</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a asp-controller="User" asp-action="Index">
+                                <i class="fa fa-circle-o"></i>Danh sách nhân viên
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="User" asp-action="Create">
+                                <i class="fa fa-circle-o"></i> Thêm mới nhân viên
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </section>
         <!-- /.sidebar -->

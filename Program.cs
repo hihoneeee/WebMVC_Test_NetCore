@@ -105,8 +105,8 @@ app.UseRouting();
 app.UseSession();
 
 app.UseAuthentication();
-app.UseMiddleware<CookieRoleMiddleware>();
 app.UseAuthorization();
+app.UseMiddleware<CookieRoleMiddleware>();
 
 app.MapControllerRoute(
     name: "areas",
@@ -119,4 +119,3 @@ app.MapControllerRoute(
     name: "areas",
     pattern: "{controller=Error}/{action=NotFound}");
 app.Run();
-

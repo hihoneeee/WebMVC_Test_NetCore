@@ -15,9 +15,15 @@
             <li><a href="#">Quản lý vai trò</a></li>
         </ol>
     </section>
+
     <section class="content container-fluid">
+        <div class="col-md-12" style="margin-bottom: 1rem">
+            <a asp-controller="Role" asp-action="Create" class="btn btn-info">
+                <i class="ri-add-circle-fill"></i> Thêm vai trò
+            </a>
+        </div>
         <div class="col-xs-12">
-            <div class="box">
+            <div class="box p-4">
                 <div class="box-body table-responsive no-padding">
                     <table class="table-hover table" id='table_panigation'>
                         <thead>
@@ -50,7 +56,7 @@
                                         }
                                     </td>
                                     <td class="flex items-center gap-2" style="line-height: 2.5">
-                                        <a asp-controller="Role" asp-action="AssignPermissions" asp-route-Id="@role.id" class="btn btn-info btn-sm">Cấp quyền</a>
+                                        <a asp-controller="Role" asp-action="AssignPermissions" asp-route-Id="@role.id" class="btn btn-success btn-sm">Cấp quyền</a>
                                         <a asp-controller="Role" asp-action="Edit" asp-route-Id="@role.id" class="btn btn-warning btn-sm">Sửa</a>
 
                                         <form asp-action="Delete" method="post" asp-route-Id="@role.id">

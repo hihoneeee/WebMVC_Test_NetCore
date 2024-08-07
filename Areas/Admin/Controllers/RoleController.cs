@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestWebAPI.DTOs.Role;
 using TestWebAPI.DTOs.RoleHasPermission;
@@ -24,19 +25,19 @@ namespace TestWebMVC.Areas.Admin.Controllers
             _permissionServices = permissionServices;
             _roleHasPermissionServices = roleHasPermissionServices;
         }
-
+        [Authorize(Policy = "get-role")]
         public async Task<IActionResult> Index()
         {
             var response = await _roleService.GetAllRoles();
             return View(response.data);
         }
-
+        [Authorize(Policy = "create-role")]
         public async Task<IActionResult> Create()
         {
             var model = new RoleDTO();
             return View("Form", model);
         }
-
+        [Authorize(Policy = "create-role")]
         public async Task<IActionResult> Store(AddRoleDTO addRoleDTO)
         {
             var response = await _roleService.AddRoleAsync(addRoleDTO);
@@ -51,7 +52,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
                 return RedirectToAction("Create");
             }
         }
-
+        [Authorize(Policy = "update-role")]
         public async Task<IActionResult> Edit(int id)
         {
             var response = await _roleService.GetRolesById(id);
@@ -64,7 +65,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
                 return RedirectToAction("NotFound", "Error");
             }
         }
-
+        [Authorize(Policy = "update-role")]
         public async Task<IActionResult> Update(int id, AddRoleDTO addRoleDTO)
         {
             var response = await _roleService.UpdateRoleAsync(id, addRoleDTO);
@@ -80,6 +81,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = "delete-role")]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _roleService.DeleteRoleAsync(id);
@@ -94,6 +96,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
                 return RedirectToAction("NotFound", "Error");
             }
         }
+        [Authorize(Policy = "assign-permission")]
         [HttpGet("assign-permissions/{id}")]
         public async Task<IActionResult> AssignPermissions(int id)
         {
@@ -115,7 +118,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
                 return RedirectToAction("NotFound", "Error");
             }
         }
-
+        [Authorize(Policy = "assign-permission")]
         [HttpPost("assign-permissions")]
         public async Task<IActionResult> AssignRolePermissions(AddRoleHasPermissionDTO addRoleHasPermissionDTO)
         {

@@ -17,18 +17,20 @@ namespace TestWebMVC.Areas.Admin.Controllers
         {
             _categoryServices = categoryServices;
         }
+        [Authorize(Policy = "get-category")]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             var serviceResponse = await _categoryServices.GetCategoriesAsync();
             return View(serviceResponse.data);
         }
+        [Authorize(Policy = "create-category")]
         public async Task<IActionResult> Create()
         {
             var model = new GetCategoryDTO();
             return View("Form", model);
         }
-
+        [Authorize(Policy = "create-category")]
         public async Task<IActionResult> Store(CategoryDTO categoryDTO)
         {
             var response = await _categoryServices.CreateCategoryAsync(categoryDTO);
@@ -43,7 +45,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
                 return RedirectToAction("Create");
             }
         }
-
+        [Authorize(Policy = "update-category")]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -54,7 +56,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
             }
             return RedirectToAction("Index");
         }
-
+        [Authorize(Policy = "update-category")]
         [HttpPost]
         public async Task<IActionResult> Update(int id, CategoryDTO categoryDTO)
         {
@@ -70,7 +72,7 @@ namespace TestWebMVC.Areas.Admin.Controllers
                 return RedirectToAction("Edit");
             }
         }
-
+        [Authorize(Policy = "delete-category")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

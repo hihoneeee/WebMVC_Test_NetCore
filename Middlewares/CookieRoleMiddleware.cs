@@ -27,6 +27,7 @@ namespace TestWebMVC.Middlewares
             }
 
             var roleCode = _cookieHelper.GetUserRole();
+            var roleName = _cookieHelper.GetUserRoleName();
 
             // Kiểm tra nếu người dùng đã có cookie và đang truy cập trang đăng nhập
             if (!string.IsNullOrEmpty(roleCode) && path.StartsWithSegments("/admin/auth/login"))
@@ -36,9 +37,9 @@ namespace TestWebMVC.Middlewares
             }
 
             // Kiểm tra quyền truy cập các trang admin
-            if (path.StartsWithSegments("/admin"))
+            if (path.StartsWithSegments("/admin") && !path.StartsWithSegments("/admin/auth"))
             {
-                if (string.IsNullOrEmpty(roleCode) || roleCode != "D22MD2")
+                if (string.IsNullOrEmpty(roleCode) || roleName == "Buyer" && roleName == "Seller")
                 {
                     context.Response.Redirect("/admin/auth/login");
                     return;
